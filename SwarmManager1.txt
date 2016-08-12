@@ -16,24 +16,70 @@ DNS=[DNSIP]
 Domains=[DomanSuffix]
 
 # Configure the administration interface eth1
-vi /etc/systemd/network/10-static-eth0.network
+vi /etc/systemd/network/10-static-eth1.network
 
 [Match]
 Name=eth1
 
 [Network]
-Address=[PRODUCTIONIP]
+Address=[ADMINISTRATIONIP]
+
+[Route]
+Gateway=[ADMINISTRATIONIPGW]
+Destination=[ADMINISTRATIONNETWORKRANGE]
 
 
+chmod 644 /etc/systemd/network/10-static-eth1.network
 systemctl restart systemd-networkd.service
 
+[Timezone]
+ln -sf /usr/share/zoneinfo/Europe/Paris localtime
+
+
+
+// Proxy
+export https_proxy=http://172.19.129.1:8080/
+export http_proxy=http://172.19.129.1:8080/
+
+//Enable SSH
+
+sed -i -e 's/PermitRootLogin yes/PermitRootLogin yes/g' /etc/ssh/sshd_config
+systemctl restart sshd
+
+//CHANGE HOSTNAME
+
+vi /etc/hosts
+
+127.0.0.1	[hostname]
+
+vi /etc/hostname
+
+[hostname]
+
+
+// TDNF Upgrade components
+
+TDNF upgrade
+tdnf clean all
+
+// UPGRADE Docker to 1.12
+tdnf install wget
+tdnf install tar
+
+
+cd /home
+wget https://get.docker.com/builds/Linux/x86_64/docker-latest.tgz
+tar -xvzf docker-latest.tgz
+mv docker/* /usr/bin/
+rm -r docker*
+
+// Enable docker to run after restart
+
+systemctl enable docker
+systemctl start docker
 
 
 
 
 
 
-
-IN	2215	1	1	10.154.225.1	10.154.225.31	255.255.192.0	10.154.255.254
-FE	2215	1	1	10.154.225.32	10.154.225.47	255.255.192.0	10.154.255.254
-BE	2215	1	1	10.154.225.48	10.154.225.63	255.255.192.0	10.154.255.254
