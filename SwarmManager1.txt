@@ -1,0 +1,39 @@
+# Network Configuration of interface eth0
+
+mv /etc/systemd/network/10-dhcp-eth0.network  /etc/systemd/network/10-static-eth0.network
+cp /etc/systemd/network/10-static-eth0.network /etc/systemd/network/10-static-eth1.network
+
+# Configure the production interface eth0
+vi /etc/systemd/network/10-static-eth0.network
+
+[Match]
+Name=eth0
+
+[Network]
+Address=[PRODUCTIONIP]
+Gateway=[PRODUCTIONIPGW]
+DNS=[DNSIP]
+Domains=[DomanSuffix]
+
+# Configure the administration interface eth1
+vi /etc/systemd/network/10-static-eth0.network
+
+[Match]
+Name=eth1
+
+[Network]
+Address=[PRODUCTIONIP]
+
+
+systemctl restart systemd-networkd.service
+
+
+
+
+
+
+
+
+IN	2215	1	1	10.154.225.1	10.154.225.31	255.255.192.0	10.154.255.254
+FE	2215	1	1	10.154.225.32	10.154.225.47	255.255.192.0	10.154.255.254
+BE	2215	1	1	10.154.225.48	10.154.225.63	255.255.192.0	10.154.255.254
